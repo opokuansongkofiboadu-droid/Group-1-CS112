@@ -1,1 +1,15 @@
-[]
+[
+    {
+        "submission_id": 1,
+        "task_id": 1,
+        "patient_id": "12342024",
+        "filename": "12342024_task1.pdf",
+        "submitted_at": "2026-08-28 13:58:47",
+        "status": "Reviewed",
+        "review_outcome": "Reviewed \u2014 Normal",
+        "review_notes": "Submission received and reviewed.",
+        "reviewer_id": "12340000",
+        "reviewed_at": "2026-08-28 14:09:26",
+        "notification_status": "Pending"
+    }
+]

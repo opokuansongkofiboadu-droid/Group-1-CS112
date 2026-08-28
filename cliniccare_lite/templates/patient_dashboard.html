@@ -10,7 +10,139 @@
 
     <p>Welcome, {{ name }}!</p>
 
-    <p>You are logged in as a patient.</p>
+    <h2>Assigned Health Tasks</h2>
+
+    {% if tasks %}
+
+        {% for task in tasks %}
+
+            <hr>
+
+            <h3>{{ task.title }}</h3>
+
+            <p>
+                <strong>Description:</strong>
+                {{ task.description }}
+            </p>
+
+            <p>
+                <strong>Due Date:</strong>
+                {{ task.due_date }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ task.status }}
+            </p>
+
+            {% if task.review_outcome %}
+
+    <p>
+        <strong>Review Outcome:</strong>
+        {{ task.review_outcome }}
+    </p>
+
+    <p>
+        <strong>Clinician Notes:</strong>
+        {{ task.review_notes }}
+    </p>
+
+{% endif %}
+            
+            {% if task.status == "Pending" %}
+
+    <form
+        method="POST"
+        action="/submit-task/{{ task.task_id }}"
+        enctype="multipart/form-data"
+    >
+
+        <label>Upload Submission:</label>
+
+        <input
+            type="file"
+            name="file"
+            accept=".txt,.csv,.pdf"
+            required
+        >
+
+        <button type="submit">Submit Task</button>
+
+    </form>
+
+{% else %}
+
+    <p><strong>Submission received.</strong></p>
+
+{% endif %}
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No health tasks have been assigned to you.</p>
+
+    {% endif %}
+
+    <br>
+
+    <hr>
+    <hr>
+
+<h2>Inbox</h2>
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <p>
+            <strong>From:</strong>
+            {{ message.sender_id }}
+        </p>
+
+        <p>
+            <strong>Message:</strong>
+            {{ message.content }}
+        </p>
+
+        <p>
+            <strong>Sent:</strong>
+            {{ message.timestamp }}
+        </p>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No messages yet.</p>
+
+{% endif %}
+
+<h2>Message Your Clinician</h2>
+
+<p>
+    <strong>Important:</strong>
+    This messaging service is not continuously monitored.
+    Do not use it for emergencies or urgent medical situations.
+</p>
+
+<form method="POST" action="/send-message">
+
+    <label>Clinician ID:</label>
+    <input type="text" name="recipient_id" required>
+
+    <br><br>
+
+    <label>Message:</label>
+    <textarea name="content" required></textarea>
+
+    <br><br>
+
+    <button type="submit">Send Message</button>
+
+</form>
 
     <a href="/logout">Logout</a>
 

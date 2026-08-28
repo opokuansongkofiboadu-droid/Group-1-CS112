@@ -9,6 +9,22 @@
     <h1>Clinician Dashboard</h1>
     <p>Welcome, {{ name }}!</p>
 
+    <hr>
+
+<h2>Clinic Analytics</h2>
+
+<p><strong>Total Tasks:</strong> {{ total_tasks }}</p>
+
+<p><strong>Total Submissions:</strong> {{ total_submissions }}</p>
+
+<p><strong>Pending Reviews:</strong> {{ pending_reviews }}</p>
+
+<p><strong>Reviewed Submissions:</strong> {{ reviewed }}</p>
+
+<p><strong>Task Completion Rate:</strong> {{ completion_rate }}%</p>
+
+<hr>
+
     <h2>Create Health Task</h2>
 
     {% if message %}
@@ -42,6 +58,130 @@
     </form>
 
     <br>
+
+    <hr>
+
+<h2>Patient Submissions</h2>
+
+{% if submissions %}
+
+    {% for submission in submissions %}
+
+        <h3>{{ submission.task_title }}</h3>
+
+        <p>
+            <strong>Patient ID:</strong>
+            {{ submission.patient_id }}
+        </p>
+
+        <p>
+            <strong>File:</strong>
+            {{ submission.filename }}
+        </p>
+
+        <p>
+            <strong>Submitted:</strong>
+            {{ submission.submitted_at }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ submission.status }}
+        </p>
+
+        <form method="POST"
+              action="/review-submission/{{ submission.submission_id }}">
+
+            <label>Review Outcome:</label>
+
+            <select name="review_outcome" required>
+                <option value="">Select outcome</option>
+                <option value="Reviewed — Normal">Reviewed — Normal</option>
+                <option value="Needs Follow-up">Needs Follow-up</option>
+                <option value="Escalated">Escalated</option>
+            </select>
+
+            <br><br>
+
+            <label>Review Notes:</label>
+            <textarea name="review_notes"></textarea>
+
+            <br><br>
+
+            <button type="submit">Submit Review</button>
+
+        </form>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No patient submissions yet.</p>
+
+{% endif %}
+
+<hr>
+
+<h2>Inbox</h2>
+
+<p>
+    <strong>Important:</strong>
+    This messaging service is not continuously monitored.
+    Do not use it for emergencies or urgent medical situations.
+</p>
+
+{% if messages %}
+
+    {% for message in messages %}
+
+        <hr>
+
+        <p>
+            <strong>From:</strong>
+            {{ message.sender_id }}
+        </p>
+
+        <p>
+            <strong>Message:</strong>
+            {{ message.content }}
+        </p>
+
+        <p>
+            <strong>Sent:</strong>
+            {{ message.timestamp }}
+        </p>
+
+        <h3>Reply</h3>
+
+        <form method="POST" action="/send-message">
+
+            <input
+                type="hidden"
+                name="recipient_id"
+                value="{{ message.sender_id }}"
+            >
+
+            <textarea
+                name="content"
+                placeholder="Type your reply"
+                required
+            ></textarea>
+
+            <br><br>
+
+            <button type="submit">Reply</button>
+
+        </form>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No messages yet.</p>
+
+{% endif %}
 
     <a href="/logout">Logout</a>
 
