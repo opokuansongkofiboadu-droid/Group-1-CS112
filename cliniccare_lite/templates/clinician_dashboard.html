@@ -77,6 +77,9 @@
         <p>
             <strong>File:</strong>
             {{ submission.filename }}
+            <a href="/download-submission/{{ submission.submission_id }}">
+    Download Submission
+</a>
         </p>
 
         <p>
@@ -88,6 +91,10 @@
             <strong>Status:</strong>
             {{ submission.status }}
         </p>
+        <p>
+    <strong>Automated Completeness Check:</strong>
+    {{ submission.completeness_check }}
+</p>
 
         <form method="POST"
               action="/review-submission/{{ submission.submission_id }}">
@@ -123,6 +130,64 @@
 {% endif %}
 
 <hr>
+
+<hr>
+
+<h2>Create Clinic Announcement</h2>
+
+<form method="POST" action="/create-announcement">
+
+    <label>Title:</label>
+    <input type="text" name="title" required>
+
+    <br><br>
+
+    <label>Message:</label>
+    <textarea name="content" required></textarea>
+
+    <br><br>
+
+    <label>Type:</label>
+    <select name="priority" required>
+        <option value="Routine">Routine</option>
+        <option value="Urgent">Urgent</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">Publish Announcement</button>
+
+</form>
+
+<hr>
+
+<h2>Create Appointment</h2>
+
+<form method="POST" action="/create-appointment">
+
+    <label>Patient ID:</label>
+    <input type="text" name="patient_id" required>
+
+    <br><br>
+
+    <label>Date:</label>
+    <input type="date" name="appointment_date" required>
+
+    <br><br>
+
+    <label>Time:</label>
+    <input type="time" name="appointment_time" required>
+
+    <br><br>
+
+    <label>Purpose:</label>
+    <input type="text" name="purpose" required>
+
+    <br><br>
+
+    <button type="submit">Create Appointment</button>
+
+</form>
 
 <h2>Inbox</h2>
 

@@ -2,9 +2,18 @@ import os
 import json
 import re
 import bcrypt
+import csv
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    send_from_directory
+)
 from datetime import datetime
 
 load_dotenv()
@@ -18,6 +27,12 @@ TASKS_FILE = os.path.join(BASE_DIR, "data", "tasks.json")
 SUBMISSIONS_FILE = os.path.join(BASE_DIR, "data", "submissions.json")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 MESSAGES_FILE = os.path.join(BASE_DIR, "data", "messages.json")
+ANNOUNCEMENTS_FILE = os.path.join(
+    BASE_DIR, "data", "announcements.json")
+APPOINTMENTS_FILE = os.path.join(
+    BASE_DIR, "data", "appointments.json"
+)
+
 
 def load_users():
     with open(USERS_FILE, "r") as file:
@@ -55,6 +70,62 @@ def save_messages(messages):
     with open(MESSAGES_FILE, "w") as file:
         json.dump(messages, file, indent=4)
 
+def load_announcements():
+    with open(ANNOUNCEMENTS_FILE, "r") as file:
+        return json.load(file)
+
+
+def save_announcements(announcements):
+    with open(ANNOUNCEMENTS_FILE, "w") as file:
+        json.dump(announcements, file, indent=4)
+
+def load_appointments():
+    with open(APPOINTMENTS_FILE, "r") as file:
+        return json.load(file)
+
+
+def save_appointments(appointments):
+    with open(APPOINTMENTS_FILE, "w") as file:
+        json.dump(appointments, file, indent=4)
+
+def check_file_completeness(file_path, extension):
+
+    if extension == "txt":
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read().strip()
+
+        if not content:
+            return "Incomplete: TXT file is empty."
+
+        return "Complete"
+
+
+    if extension == "csv":
+        with open(file_path, "r", encoding="utf-8") as file:
+            reader = csv.reader(file)
+            rows = list(reader)
+
+        if len(rows) == 0:
+            return "Incomplete: CSV file is empty."
+
+        if len(rows[0]) == 0:
+            return "Incomplete: CSV has no headings."
+
+        if len(rows) < 2:
+            return "Incomplete: CSV has no data rows."
+
+        for row in rows:
+            for cell in row:
+                if cell.strip() == "":
+                    return "Incomplete: CSV contains empty fields."
+
+        return "Complete"
+
+
+    if extension == "pdf":
+        return "Accepted - PDF completeness not automatically checked."
+
+    return "Unsupported file type."
 
 def valid_user_id(user_id, role):
     if not user_id.isdigit() or len(user_id) != 8:
@@ -176,6 +247,14 @@ def patient_dashboard():
     tasks = load_tasks()
     submissions = load_submissions()
     messages = load_messages()
+    announcements = load_announcements()
+    appointments = load_appointments()
+
+    patient_appointments = []
+
+    for appointment in appointments:
+        if appointment["patient_id"] == session["user_id"]:
+            patient_appointments.append(appointment)
 
     patient_tasks = []
 
@@ -205,13 +284,27 @@ def patient_dashboard():
 
     for message in messages:
         if message["recipient_id"] == session["user_id"]:
-            patient_messages.append(message)       
+            patient_messages.append(message)   
+
+    users = load_users()
+    engagement_points = 0
+
+    for user in users:
+        if user["user_id"] == session["user_id"]:
+            engagement_points = user.get("engagement_points", 0)
+            break    
+
+    theme = session.get("theme", "colorful")
 
     return render_template(
         "patient_dashboard.html",
         name=session["full_name"],
         tasks=patient_tasks,
-        messages=patient_messages
+        messages=patient_messages,
+        engagement_points=engagement_points,
+        announcements=announcements,
+        appointments=patient_appointments,
+        theme=theme
     )
 
 @app.route("/clinician-dashboard")
@@ -375,6 +468,10 @@ def submit_task(task_id):
     file_path = os.path.join(patient_folder, new_filename)
 
     uploaded_file.save(file_path)
+    completeness_result = check_file_completeness(
+    file_path,
+    extension
+)
 
     new_submission = {
         "submission_id": len(submissions) + 1,
@@ -383,6 +480,7 @@ def submit_task(task_id):
         "filename": new_filename,
         "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "status": "Submitted",
+        "completeness_check": completeness_result,
         "review_outcome": "",
         "review_notes": ""
     }
@@ -393,7 +491,19 @@ def submit_task(task_id):
     task["status"] = "Submitted"
     save_tasks(tasks)
 
+    users = load_users()
+
+    for user in users:
+        if user["user_id"] == session["user_id"]:
+            current_points = user.get("engagement_points", 0)
+            user["engagement_points"] = current_points + 10
+            break
+
+    save_users(users)
+
     return redirect(url_for("patient_dashboard"))
+
+    
 
 @app.route("/review-submission/<int:submission_id>", methods=["POST"])
 def review_submission(submission_id):
@@ -474,6 +584,126 @@ def send_message():
         return redirect(url_for("patient_dashboard"))
 
     return redirect(url_for("clinician_dashboard"))
+
+@app.route("/create-announcement", methods=["POST"])
+def create_announcement():
+
+    if "user_id" not in session or session["role"] != "clinician":
+        return redirect(url_for("login"))
+
+    title = request.form["title"].strip()
+    content = request.form["content"].strip()
+    priority = request.form["priority"]
+
+    announcements = load_announcements()
+
+    new_announcement = {
+        "announcement_id": len(announcements) + 1,
+        "title": title,
+        "content": content,
+        "priority": priority,
+        "clinician_id": session["user_id"],
+        "published_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    announcements.append(new_announcement)
+    save_announcements(announcements)
+
+    return redirect(url_for("clinician_dashboard"))
+
+@app.route("/create-appointment", methods=["POST"])
+def create_appointment():
+
+    if "user_id" not in session or session["role"] != "clinician":
+        return redirect(url_for("login"))
+
+    patient_id = request.form["patient_id"].strip()
+    appointment_date = request.form["appointment_date"]
+    appointment_time = request.form["appointment_time"]
+    purpose = request.form["purpose"].strip()
+
+    users = load_users()
+
+    patient_exists = False
+
+    for user in users:
+        if user["user_id"] == patient_id and user["role"] == "patient":
+            patient_exists = True
+            break
+
+    if not patient_exists:
+        return "Patient ID not found."
+
+    appointments = load_appointments()
+
+    new_appointment = {
+        "appointment_id": len(appointments) + 1,
+        "patient_id": patient_id,
+        "clinician_id": session["user_id"],
+        "date": appointment_date,
+        "time": appointment_time,
+        "purpose": purpose,
+        "status": "Scheduled"
+    }
+
+    appointments.append(new_appointment)
+    save_appointments(appointments)
+
+    return redirect(url_for("clinician_dashboard"))
+
+@app.route("/change-theme", methods=["POST"])
+def change_theme():
+
+    if "user_id" not in session or session["role"] != "patient":
+        return redirect(url_for("login"))
+
+    theme = request.form["theme"]
+
+    if theme in ["colorful", "dark"]:
+        session["theme"] = theme
+
+    return redirect(url_for("patient_dashboard"))
+
+@app.route("/download-submission/<int:submission_id>")
+def download_submission(submission_id):
+
+    if "user_id" not in session or session["role"] != "clinician":
+        return redirect(url_for("login"))
+
+    submissions = load_submissions()
+    tasks = load_tasks()
+
+    for submission in submissions:
+
+        if submission["submission_id"] == submission_id:
+
+            # Check that this submission belongs to
+            # a task created by the logged-in clinician.
+            allowed = False
+
+            for task in tasks:
+                if (
+                    task["task_id"] == submission["task_id"]
+                    and task["clinician_id"] == session["user_id"]
+                ):
+                    allowed = True
+                    break
+
+            if not allowed:
+                return "Unauthorized.", 403
+
+            patient_folder = os.path.join(
+                UPLOAD_FOLDER,
+                submission["patient_id"]
+            )
+
+            return send_from_directory(
+                patient_folder,
+                submission["filename"],
+                as_attachment=True
+            )
+
+    return "Submission not found.", 404
 
 @app.route("/logout")
 def logout():
