@@ -38,3 +38,32 @@ Create a virtual environment:
 
 ```bash
 python -m venv venv
+
+
+## Testing
+
+ClinicCare-Lite was tested using both manual testing and automated unit tests.
+
+The automated tests were created with Python's built-in `unittest` framework and cover:
+
+- Valid and invalid patient IDs
+- Valid and invalid clinician IDs
+- Strong and weak passwords
+- Unauthorized access to the clinician dashboard
+
+A total of 7 automated tests were run successfully.
+
+To run the automated tests, open a terminal inside the `cliniccare_lite` folder and run:
+
+```bash
+python -m unittest discover -s tests -v
+
+
+
+## Important Notice
+
+ClinicCare-Lite is an academic prototype designed for administrative and communication purposes only.
+
+It does not diagnose patients, interpret symptoms, recommend treatment, prescribe medication, or replace professional clinical judgement.
+
+Real email notifications are not currently configured. Notifications are provided through the in-app messaging system.
