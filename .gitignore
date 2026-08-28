@@ -5,3 +5,4 @@ __pycache__/
 
 cliniccare_lite/uploads/*
 !cliniccare_lite/uploads/.gitkeep
+cliniccare_lite/venv/
