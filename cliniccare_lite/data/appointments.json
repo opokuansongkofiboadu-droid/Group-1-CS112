@@ -1,0 +1,11 @@
+[
+    {
+        "appointment_id": 1,
+        "patient_id": "12342024",
+        "clinician_id": "12340000",
+        "date": "2029-09-09",
+        "time": "15:29",
+        "purpose": "following up",
+        "status": "Scheduled"
+    }
+]

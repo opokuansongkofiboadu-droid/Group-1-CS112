@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+.vscode/
+
+cliniccare_lite/uploads/*
+!cliniccare_lite/uploads/.gitkeep
