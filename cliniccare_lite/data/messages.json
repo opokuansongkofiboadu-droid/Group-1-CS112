@@ -14,5 +14,29 @@
         "content": "submission revieved",
         "timestamp": "2026-08-28 14:22:56",
         "read": false
+    },
+    {
+        "message_id": 3,
+        "sender_id": "12342024",
+        "recipient_id": "12340000",
+        "content": "New submission received for task: Notification Test 2",
+        "timestamp": "2026-08-28 18:05:08",
+        "read": false
+    },
+    {
+        "message_id": 4,
+        "sender_id": "12342024",
+        "recipient_id": "12340000",
+        "content": "New submission received for task: Review Notification Test",
+        "timestamp": "2026-08-28 18:14:27",
+        "read": false
+    },
+    {
+        "message_id": 5,
+        "sender_id": "12340000",
+        "recipient_id": "12342024",
+        "content": "Please review the instructions and follow up.",
+        "timestamp": "2026-08-28 18:15:57",
+        "read": false
     }
 ]

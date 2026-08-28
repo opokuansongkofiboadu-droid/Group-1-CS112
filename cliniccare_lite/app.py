@@ -497,6 +497,21 @@ def submit_task(task_id):
     submissions.append(new_submission)
     save_submissions(submissions)
 
+    messages = load_messages()
+
+    notification = {
+        "message_id": len(messages) + 1,
+        "sender_id": session["user_id"],
+        "recipient_id": task["clinician_id"],
+        "content": f"New submission received for task: {task['title']}",
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "read": False
+}
+
+    messages.append(notification)
+    save_messages(messages)
+
+
     task["status"] = "Submitted"
     save_tasks(tasks)
 
@@ -511,6 +526,20 @@ def submit_task(task_id):
     save_users(users)
 
     return redirect(url_for("patient_dashboard"))
+
+    messages = load_messages()
+
+    notification = {
+     "message_id": len(messages) + 1,
+        "sender_id": session["user_id"],
+        "recipient_id": task["clinician_id"],
+        "content": f"New submission received for task: {task['title']}",
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "read": False
+}
+
+    messages.append(notification)
+    save_messages(messages)
 
     
 
@@ -533,20 +562,35 @@ def review_submission(submission_id):
             submission["review_outcome"] = review_outcome
             submission["review_notes"] = review_notes
             submission["reviewer_id"] = session["user_id"]
-
             submission["reviewed_at"] = datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S"
             )
-
-            submission["notification_status"] = "Pending"
+            submission["notification_status"] = "Sent"
 
             save_submissions(submissions)
 
+            # Send automatic notification to patient
+            messages = load_messages()
+
+            notification = {
+                "message_id": len(messages) + 1,
+                "sender_id": session["user_id"],
+                "recipient_id": submission["patient_id"],
+                "content": f"Your submission has been reviewed: {review_outcome}",
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "read": False
+            }
+
+            messages.append(notification)
+            save_messages(messages)
+
+            # Update task status
             tasks = load_tasks()
 
             for task in tasks:
                 if task["task_id"] == submission["task_id"]:
                     task["status"] = "Reviewed"
+                    break
 
             save_tasks(tasks)
 

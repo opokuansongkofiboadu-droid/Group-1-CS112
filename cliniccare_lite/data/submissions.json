@@ -44,5 +44,38 @@
         "completeness_check": "Complete",
         "review_outcome": "",
         "review_notes": ""
+    },
+    {
+        "submission_id": 5,
+        "task_id": 5,
+        "patient_id": "12342024",
+        "filename": "12342024_task5.csv",
+        "submitted_at": "2026-08-28 17:55:10",
+        "status": "Submitted",
+        "completeness_check": "Complete",
+        "review_outcome": "",
+        "review_notes": ""
+    },
+    {
+        "submission_id": 6,
+        "task_id": 6,
+        "patient_id": "12342024",
+        "filename": "12342024_task6.pdf",
+        "submitted_at": "2026-08-28 18:05:08",
+        "status": "Submitted",
+        "completeness_check": "Accepted - PDF completeness not automatically checked.",
+        "review_outcome": "",
+        "review_notes": ""
+    },
+    {
+        "submission_id": 7,
+        "task_id": 7,
+        "patient_id": "12342024",
+        "filename": "12342024_task7.pdf",
+        "submitted_at": "2026-08-28 18:14:27",
+        "status": "Submitted",
+        "completeness_check": "Accepted - PDF completeness not automatically checked.",
+        "review_outcome": "",
+        "review_notes": ""
     }
 ]

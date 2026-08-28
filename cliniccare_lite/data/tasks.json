@@ -34,5 +34,32 @@
         "description": "testing for file size",
         "due_date": "2029-09-08",
         "status": "Submitted"
+    },
+    {
+        "task_id": 5,
+        "patient_id": "12342024",
+        "clinician_id": "12340000",
+        "title": "Notification Test",
+        "description": "Upload a TXT file to test automatic notification.",
+        "due_date": "2029-09-09",
+        "status": "Submitted"
+    },
+    {
+        "task_id": 6,
+        "patient_id": "12342024",
+        "clinician_id": "12340000",
+        "title": "Notification Test 2",
+        "description": "Upload a file to test the automatic notification.",
+        "due_date": "2029-09-09",
+        "status": "Submitted"
+    },
+    {
+        "task_id": 7,
+        "patient_id": "12342024",
+        "clinician_id": "12340000",
+        "title": "Review Notification Test",
+        "description": "Upload a TXT file.",
+        "due_date": "2029-09-09",
+        "status": "Submitted"
     }
 ]
