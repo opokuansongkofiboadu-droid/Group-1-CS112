@@ -2,10 +2,21 @@
 <html>
 <head>
     <title>Clinician Dashboard</title>
+    <head>
+    <title>ClinicCare-Lite Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
 </head>
 
-<body>
+<body class="dark">
+    <nav>
+    <a href="/clinician-dashboard">Dashboard</a> |
+    <a href="/logout">Logout</a>
+</nav>
 
+<hr>
     <h1>Clinician Dashboard</h1>
     <p>Welcome, {{ name }}!</p>
 

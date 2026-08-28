@@ -5,7 +5,7 @@
         "email": "patient@test.com",
         "password": "$2b$12$6oJlCAgho5smFKWq9pzPoOD.KAT6w/2Os3dMY9FO/nAq5JJNpTTxG",
         "role": "patient",
-        "engagement_points": 30
+        "engagement_points": 40
     },
     {
         "user_id": "12340000",

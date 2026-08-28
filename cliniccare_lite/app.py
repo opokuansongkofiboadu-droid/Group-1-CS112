@@ -32,6 +32,7 @@ ANNOUNCEMENTS_FILE = os.path.join(
 APPOINTMENTS_FILE = os.path.join(
     BASE_DIR, "data", "appointments.json"
 )
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
 
 def load_users():
@@ -444,6 +445,14 @@ def submit_task(task_id):
 
     if extension not in ["txt", "csv", "pdf"]:
         return "Only TXT, CSV and PDF files are allowed."
+
+    file_data = uploaded_file.read()
+    file_size = len(file_data)
+
+    uploaded_file.seek(0)
+
+    if file_size > MAX_FILE_SIZE:
+        return "File is too large. Maximum size is 5 MB."
 
     submissions = load_submissions()
 
