@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "user_id": "12342024",
+        "full_name": "Test Patient",
+        "email": "patient@test.com",
+        "password": "$2b$12$6oJlCAgho5smFKWq9pzPoOD.KAT6w/2Os3dMY9FO/nAq5JJNpTTxG",
+        "role": "patient"
+    },
+    {
+        "user_id": "12340000",
+        "full_name": "Test Clinician",
+        "email": "clinician@test.com",
+        "password": "$2b$12$J.3jmQnBYJNAoVzDB7Py/eKWBSnXU6ovxVGt6y8xlIv7ib32RmD5C",
+        "role": "clinician"
+    }
+]
